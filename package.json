@@ -1,0 +1,21 @@
+{
+  "name": "prueba-fullstack-back",
+  "version": "1.0.0",
+  "description": "backend de la prueba tecnica fullstack de la adres",
+  "main": "index.ts",
+  "scripts": {
+    "dev": "nodemon index.ts",
+    "build": "tsc"
+  },
+  "author": "@Yotis56",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "typescript": "^5.5.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "nodemon": "^3.1.4",
+    "ts-node": "^10.9.2"
+  }
+}
