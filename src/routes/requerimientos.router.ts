@@ -45,11 +45,13 @@ router.post('/', async (req: Request, res: Response) => {
     try {
         const requerimiento: Adquisiciones = req.body
         const documentacion = arrayToPostgresArray(requerimiento.documentacion)
-        const query = `INSERT into public.requerimientos (presupuesto, unidad, tipo, cantidad, valorunitario, fechaadquisicion, proveedor, documentacion) VALUES ('${requerimiento.presupuesto}', '${requerimiento.unidad}', '${requerimiento.tipo}', '${requerimiento.cantidad}', '${requerimiento.valorunitario}', '${requerimiento.fechaadquisicion}', '${requerimiento.proveedor}', '${documentacion}')`
-        const response = await myPool.query(query)
-        console.log(response)
+        const today = new Date()
+        const query1 = `INSERT into public.requerimientos (presupuesto, unidad, tipo, cantidad, valorunitario, fechaadquisicion, proveedor, documentacion, createdat) VALUES ('${requerimiento.presupuesto}', '${requerimiento.unidad}', '${requerimiento.tipo}', '${requerimiento.cantidad}', '${requerimiento.valorunitario}', '${requerimiento.fechaadquisicion}', '${requerimiento.proveedor}', '${documentacion}', '${today.toISOString()}') RETURNING id`
+        const response1 = await myPool.query(query1)
+        const query2 = `INSERT into public.historial (requerimiento_id, presupuesto, unidad, tipo, cantidad, valorunitario, fechaadquisicion, proveedor, documentacion, createdat) VALUES ('${response1.rows[0].id}',  '${requerimiento.presupuesto}', '${requerimiento.unidad}', '${requerimiento.tipo}', '${requerimiento.cantidad}', '${requerimiento.valorunitario}', '${requerimiento.fechaadquisicion}', '${requerimiento.proveedor}', '${documentacion}', '${today.toISOString()}')`
+        const response2 = await myPool.query(query2)
         res.status(200)
-        res.send({'status': '200', 'message': 'Requerimiento agregado con éxito'})
+        res.send({status: 200, message: "Adquisición agregada de manera exitosa"})
     } catch (error) {
         console.log(error)
         res.status(500)
