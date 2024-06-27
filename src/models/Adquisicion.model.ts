@@ -1,11 +1,10 @@
 export interface Adquisiciones {
     presupuesto: number;
-    unidadResponsable: string;
+    unidad: string;
     tipo: string;
     cantidad: number;
-    valorUnitario: number;
-    valorTotal: number;
-    fechaAdquisicion: Date;
+    valorunitario: number;
+    fechaadquisicion: Date;
     proveedor: string, 
     documentacion: string[];
 }
