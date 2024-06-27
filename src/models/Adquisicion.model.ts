@@ -6,5 +6,5 @@ export interface Adquisiciones {
     valorunitario: number;
     fechaadquisicion: Date;
     proveedor: string, 
-    documentacion: string[];
+    documentacion: string;
 }

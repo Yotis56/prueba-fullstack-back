@@ -5,7 +5,8 @@ import { Adquisiciones } from '../models/Adquisicion.model'
 
 const router = express.Router()
 
-const arrayToPostgresArray = (arrayToConvert: string[]) => {
+const arrayToPostgresArray = (documentacion: string) => {
+    const arrayToConvert = documentacion.split(';')
     let newString = ''
     arrayToConvert.forEach( item => {
         newString += `"${item}",`
@@ -17,7 +18,8 @@ const arrayToPostgresArray = (arrayToConvert: string[]) => {
 
 router.get('/', async (req: Request, res: Response) => {
     try {
-        console.log(req.params)
+        console.log(req.query)
+        //con req-query obtengo un objeto con key: value. Debería ver si el objeto viene vacío, o si trae algo, caso en el cual la query debe tener un WHERE.
         const query = 'SELECT * FROM public.requerimientos'
         const response = await myPool.query(query)
         const rta = response.rows
@@ -43,7 +45,6 @@ router.post('/', async (req: Request, res: Response) => {
     try {
         const requerimiento: Adquisiciones = req.body
         const documentacion = arrayToPostgresArray(requerimiento.documentacion)
-        console.log(documentacion)
         const query = `INSERT into public.requerimientos (presupuesto, unidad, tipo, cantidad, valorunitario, fechaadquisicion, proveedor, documentacion) VALUES ('${requerimiento.presupuesto}', '${requerimiento.unidad}', '${requerimiento.tipo}', '${requerimiento.cantidad}', '${requerimiento.valorunitario}', '${requerimiento.fechaadquisicion}', '${requerimiento.proveedor}', '${documentacion}')`
         const response = await myPool.query(query)
         console.log(response)
