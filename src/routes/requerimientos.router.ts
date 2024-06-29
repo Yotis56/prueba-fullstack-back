@@ -62,7 +62,6 @@ router.get('/', async (req: Request, res: Response) => {
             const queryFilters = insertFilters(queries)
             query += ` ${queryFilters}`
         }
-        console.log(query)
         const response = await myPool.query(query)
         const rta = response.rows
         res.json(rta)
