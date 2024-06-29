@@ -17,11 +17,52 @@ const arrayToPostgresArray = (documentacion: string) => {
     return newString
 } 
 
+const insertFilters = (queryArray: any[]) => {
+
+    let sqlQuery = ''
+    if (!(queryArray.length === 1 && queryArray[0][0] === 'sort')){
+        sqlQuery += ' WHERE '
+    }
+
+    for (const [key, value] of queryArray) {
+        if (key === 'presupuesto_min'){
+            sqlQuery += `presupuesto > '${value}' AND `
+        } else if (key === 'presupuesto_max'){
+            sqlQuery += `presupuesto < '${value}' AND `
+        } else if (key === 'date_min'){
+            sqlQuery += `fechaadquisicion > '${value}' AND `
+        } else if (key === 'date_max'){
+            sqlQuery += `fechaadquisicion < '${value}' AND `
+        }
+    }
+    sqlQuery = sqlQuery.slice(0, -4)
+
+    for (const [key, value] of queryArray) {
+        if (key === 'sort'){
+            sqlQuery += `ORDER BY `
+            if (value === 'date-low-to-high'){
+                sqlQuery += `fechaadquisicion ASC`
+            } else if (value === 'date-high-to-low'){
+                sqlQuery += `fechaadquisicion DESC`
+            } else if (value === 'presupuesto-low-to-high'){ 
+                sqlQuery += `presupuesto ASC`
+            } else if (value === 'presupuesto-high-to-low'){
+                sqlQuery += `presupuesto DESC`
+            }
+        }
+    }
+    return sqlQuery
+}
+
 router.get('/', async (req: Request, res: Response) => {
     try {
-        // console.log(req.query)
-        //con req-query obtengo un objeto con key: value. Debería ver si el objeto viene vacío, o si trae algo, caso en el cual la query debe tener un WHERE.
-        const query = 'SELECT * FROM public.requerimientos'
+        let query = 'SELECT * FROM public.requerimientos'
+        if (Object.keys(req.query).length > 0) {
+            const queries = Object.entries(req.query)
+            const queryFilters = insertFilters(queries)
+            query += ` ${queryFilters}`
+        }
+        console.log(query)
         const response = await myPool.query(query)
         const rta = response.rows
         res.json(rta)
@@ -34,7 +75,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     // Tengo que modificar este para que devuelva el historial completo.
     try {
         const { id } = req.params
-        const query = `SELECT * FROM public.requerimientos WHERE id = ${id}` 
+        const query = `SELECT * FROM public.historial WHERE requerimiento_id = ${id} ORDER BY createdat ASC` 
         const response = await myPool.query(query)
         const rta = response.rows
         res.json(rta)
